@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
+import { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
+import { Provider } from 'react-redux';
+import Main from './Main';
+import { store } from './store/store';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 export default function App() {
+  const [hasPermission, setHasPermission] = useState(null);
+  useEffect(() => {
+    const getBarCodeScannerPermissions = async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+     
+    };
+
+    getBarCodeScannerPermissions();
+  }, []);
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <StatusBar hidden/>
+      <Main/>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
