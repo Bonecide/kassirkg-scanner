@@ -4,12 +4,11 @@ import { StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import Main from './Main';
 import { store } from './store/store';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { Camera } from 'expo-camera';
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+       await Camera.requestCameraPermissionsAsync();
      
     };
 

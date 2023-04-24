@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { Animated, Dimensions, Text, Vibration, View } from "react-native";
+import { Animated, Button, Dimensions, Text, Vibration, View } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { StyleSheet } from "react-native";
+import { Camera } from 'expo-camera';
 
 export default function ScanerComponent({ item }) {
   const [hasPermission, setHasPermission] = useState();
   const [isScanned, setIsScanned] = useState(false);
+  const [isFlashOn, setIsFlashOn] = useState(false);
   const animatedValue = new Animated.Value(0.3);
-  useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === "granted");
-    };
+  
 
-    getBarCodeScannerPermissions();
-  }, []);
+  useEffect(() => {
+    const getPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync()
+    setHasPermission(status === "granted");
+  
+    };
+    getPermissions()
+  },[])
+
 
   if (!hasPermission) {
     return <Text>Нет доступа к камере</Text>;
@@ -26,6 +31,7 @@ export default function ScanerComponent({ item }) {
       Vibration.vibrate(500);
     }
   };
+
   const startAnimation = () => {
     Animated.loop(
       Animated.timing(animatedValue, {
@@ -36,6 +42,8 @@ export default function ScanerComponent({ item }) {
     ).start();
   };
   startAnimation();
+
+
   return (
     <View>
       
@@ -43,17 +51,22 @@ export default function ScanerComponent({ item }) {
         <Text style={s.text}>Мероприятие : </Text>
         <Text style={s.text}>{item.name}</Text>
       </View>
-      <BarCodeScanner
-        onBarCodeScanned={handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        type={BarCodeScanner.Constants.Type.back}
-        style={s.scaner}
-      >
-        <Animated.Image
-          source={require("../../assets/images/QRScan.png")}
-          style={s.scanerImage}
-        />
-      </BarCodeScanner>
+     
+          
+
+<Camera
+  onBarCodeScanned={handleBarCodeScanned}
+  barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+  type={Camera.Constants.Type.back}
+  style={s.scaner}
+  flashMode={isFlashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
+>
+  <Animated.Image
+    source={require('../../assets/images/QRScan.png')}
+    style={s.scanerImage}
+  />
+</Camera>
+<Button onPress={() =>setIsFlashOn(!isFlashOn) } title="Фонарик"/>
     </View>
   );
 }
